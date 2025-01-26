@@ -2,8 +2,7 @@
 
 ### **What is it?** ###
 
-xe.py adds clickable, easy to configure, buttons with PNG icons
-to your desktop system tray.
+xe.py adds clickable buttons with PNG icons to your desktop system tray.
 
 ### **What does it look like?** ###
 
