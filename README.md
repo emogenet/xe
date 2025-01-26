@@ -13,8 +13,9 @@ Here's my i3 tray with xe.py doing its thing (look at the red arrow):
 
 ## **Will it work for me?** ##
 
-Standard desktop environments typically include this type of feature natively,
-and this was mostly designed for i3wm which does not have this feature.
+Standard desktop environments usually include this feature natively.
+
+This was mostly designed for i3wm which does not have this feature.
 
 However, it has been tested and seems to work fine on the following desktop
 environments:
