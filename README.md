@@ -15,9 +15,9 @@ Here's my i3 tray with xe.py doing its thing (look at the red arrow):
 
 Standard desktop environments usually include this feature natively.
 
-This was mostly designed for i3wm which does not have this feature.
+This was mostly designed for i3wm which does not.
 
-However, it has been tested and seems to work fine on the following desktop
+However, xe.py has been tested and seems to work fine on the following desktop
 environments:
 
   - i3wm
@@ -25,8 +25,7 @@ environments:
   - ubuntu unity
 
 Generally speaking, if your system tray speaks the xembed protocol, I expect
-xe.py to work out of the box (caveat emptor: I haven't tried, but it will
-very likely not work on wayland).
+xe.py to work out of the box (caveat emptor: it won't work on wayland).
 
 Easiest way to check if it works for you:
 

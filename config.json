@@ -1,0 +1,27 @@
+[
+  {
+    "path" : "/usr/bin/firefox",
+    "icon" : "/home/mgix/xe/firefox.png"
+  },
+  {
+    "path" : "/opt/brave.com/brave/brave",
+    "icon" : "/home/mgix/xe/brave.png"
+  },
+  {
+    "path" : "/usr/bin/xosview",
+    "icon" : "/home/mgix/xe/xosview.png"
+  },
+  {
+    "path" : "/home/mgix/bin/nemo.sh",
+    "icon" : "/home/mgix/xe/nemo.png"
+  },
+  {
+    "path" : "/home/mgix/sw/blender/blender",
+    "icon" : "/home/mgix/xe/blender.png"
+  },
+  {
+    "path" : "/usr/bin/smplayer",
+    "icon" : "/home/mgix/xe/smplayer.png"
+  }
+]
+
