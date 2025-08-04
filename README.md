@@ -6,19 +6,20 @@ xe.py adds clickable buttons with PNG icons to your desktop system tray.
 
 ### **What does it look like?** ###
 
-Here's my i3 tray with xe.py doing its thing (look at the red arrow):
+Here's an i3 status bar, and the system tray with xe.py doing its thing (look at the red arrow):
 
 ![](bar.png "i3bar with xe.py")
 
 
 ## **Will it work for me?** ##
 
-Standard desktop environments usually include this feature natively.
+The usual desktop environments usually include this feature natively.
 
-This was mostly designed for i3wm which does not.
+xe.py was specifically designed to add the feature to i3wm, which does not
+by design choice.
 
-However, xe.py has been tested and seems to work fine on the following desktop
-environments:
+xe.py has been briefly tested and seems to work fine on the following
+desktop environments:
 
   - i3wm
   - cinnamon
@@ -30,28 +31,29 @@ xe.py to work out of the box (caveat emptor: it won't work on wayland).
 Easiest way to check if it works for you:
 
   - install it (see below)
-  - change xeconfig.json to point at valid icon files and valid applications
-    on your machine
-  - launch: ./xe.py
+  - change xeconfig.json to point at valid icon files and valid
+    applications on your machine
+  - launch: python3 ./xe.py
   - ignore annoying warning messages about deprecated GTK APIs
   - see if new buttons show up in your tray
   - if they do, click on them, see what happens
 
 ## **Why?** ##
 
-  When I write code, my - by far - prefered environments are tiling window managers.
+  When I write code, by a very wide margin, my prefered environments are
+  tiling window managers.
 
   Specifically, I use: [i3wm](https://i3wm.org/)
 
   However, the original author of i3wm as well as its subsequent maintainers
   subscribe to a strict minimalist philosophy whereby everything is supposed
   to be done via the keyboard and displaying little pictures in the status bar
-  generally seems to be considered bad taste 😃
+  generally seems to be considered in that community to be bad taste 😃
 
-  I am in fact in general agreement with that philosophy, with one exception:
+  I am in fact in general agreement with that philosophy, with some exceptions:
 
-  - I code on a laptop with a touchpad, which means a button click is *far*
-    less costly (in terms of speed and muscle use) than it is with a mouse.
+  - I code on a laptop with a touchpad, which means a button click is *far
+    less costly* (in terms of speed and muscle use) than it is with a mouse.
 
   - for apps used super often (e.g. terminals via $mod+enter) keyboard
     shortcuts is indeed **The Way**.
@@ -69,25 +71,26 @@ Easiest way to check if it works for you:
 
      - but apps launched not often enough that the cognitive load of
        committing a keyoard shortcut to memory for each is simply not
-       worth the exertion.
+       worth the exertion, especially at my age.
 
   - It looks like I am not the only one feeling this way, and there are a
     number of existing solutions to the problem that make some areas of the
     i3 status bar clickable and can launch stuff.
 
     *However*: they all share one major shortcoming (my biased opinion):
-    because the i3 status bar can only (by deliberate design choice of the
-    i3 authors) display text, and all these solutions are very far from
-    aesthetically pleasing. They are also much harder to spot quickly
+    because the i3 status bar can only (again, by deliberate design choice
+    of the i3 authors) display text, and all these solutions are very far
+    from aesthetically pleasing. They are also much harder to spot quickly
     than icons.
 
     Yes, there are workarounds e.g. using hacked fonts that display little
     drawings instead of letters. Again, my own opinion here, but ... these
-    are still not very nice, still hard to spot quickly because they're B&W.
+    are still not very nice, and in particular hard to spot quickly because
+    they're B&W.
 
     Actual pictures are:
-      - *way* nicer
-      - *way* faster to spot visually
+      - *way* faster to spotvisually
+      - *way* more visually pleasing
 
   So as a result, I've been wanting to scratch this specific itch probably
   for the better part of 10 years.
@@ -103,26 +106,24 @@ Easiest way to check if it works for you:
   - moderate amount of dependencies
   - lightweight: 1 small python script, 1 config file
 
-## **The bad** ##
+## **The less good** ##
 
-  - likely won't work on wayland
+  - won't work on wayland
+  - relies on things slightly annoying to install
   - purposefully violates the intended purpose of the system tray
-  - currently forks one instance of xe.py per button (may be fixable)
   - relies on a old-ish protocol (xembed) that might or might not survive the next decade
-  - a little bit of an ugly hack: script curently calls itself to work around the fact that
-    os.fork() gives modern python the hives
 
 ## **Installation** ##
 
 ~~~
-  sudo apt install gir1.2-appindicator3-0.1
+  sudo apt install libgirepository1.0-dev gir1.2-gtk-3.0 libglib2.0-dev libgirepository-2.0-dev gir1.2-appindicator3-0.1
+  pip install pygtkcompat
+  git clone https://gitlab.gnome.org/GNOME/pygobject.git
+  cd pygobject
+  pip install .
+  cd ..
   git clone https://github.com/emogenet/xe.git
   cd xe
-  pip3 install -f requirements.txt
   /usr/bin/python3 ./xe.py
 ~~~
-
-  - todo : check on a clean VM
-  - pygobject
-  - requirements.txt
 
