@@ -1,56 +1,23 @@
 #!/home/mgix/venv/bin/python3
 
-# hack the systray to add random apps launcher buttons with PNG icons
+# add user-defined app launcher PNG-icon buttons to the systray
 
-# we're going to need to self-forkexec, so we need our own path
-# -------------------------------------------------------------
+# things we need
+# --------------
 import os
 import sys
-my_path = sys.executable + ' ' + os.path.realpath(__file__)
+own_dir = os.path.dirname(os.path.realpath(__file__))
+own_path = sys.executable + ' ' + os.path.realpath(__file__)
 
-# parse cmd line and do things accordingly
-# ----------------------------------------
-def main():
-  if                          1==len(sys.argv): launch()
-  elif 'spawn'==sys.argv[1]:  spawn(sys.argv[2], daemon = True)
-  elif 'xembed'==sys.argv[1]: xembed(sys.argv[2], sys.argv[3])
-  else:                       raise('no comprendo')
-  sys.exit(0)
-
-'''
-  ./xe.py <no args>                              : from config, launch a bunch of of xe.py embed processes
-  ./xe.py spawn /usr/bin/blah                    : launches an app in forking daemon mode w/out ever talking to X11
-  ./xe.py xembed /usr/bin/blah /path/to/icon.png : system tray app that waits and launches app 'blah' when clicked
-'''
-
-# assumption: I don't believe the gtk api can easily do multiples indicators per gtk app
-# TODO: check if assumption is true, in which case this whole affair could be simplified a lot
-
-# launch one instance per button app we want
-# ------------------------------------------
-def launch():
-
-  import json
-  import time
-  with open('config.json', 'r') as f:
-    config = json.load(f)
-    for app in config:
-      cmd_path = app['path']
-      cmd_icon = app['icon']
-      full_cmd = f'{my_path} xembed {cmd_path} {cmd_icon}'
-      print(f'{full_cmd=}')
-      spawn(cmd = full_cmd, daemon = True)
-      time.sleep(0.2) # "animation :-)"
-
-# since python has an officially fucked fork, things are a tad gnarly
-# -------------------------------------------------------------------
+# fork a subprocess
+# -----------------
 def spawn(
   cmd,
   daemon
 ):
 
-  # daemon mode if requested
-  # ------------------------
+  # do the daemon mode dance if requested
+  # -------------------------------------
   if daemon:
 
     # fork
@@ -76,7 +43,7 @@ def spawn(
     # chdir to something generic
     # --------------------------
     try:
-      os.chdir('/')
+      os.chdir(own_dir)
     except:
       pass
 
@@ -105,15 +72,14 @@ def spawn(
   except:
     pass
 
-# pretend to be a full-fledged app with an indicator in the systray
-# -----------------------------------------------------------------
-def xembed(
-  cmd_path,
-  icon_path
-):
+# single-process tray icon manager
+# --------------------------------
+def launch():
 
-  # hide these imports inside func, if not, they fuck fork up real bad
-  # ------------------------------------------------------------------
+  print(f'in launch')
+
+  # hide these imports inside func, they don't play nice with  fork
+  # ---------------------------------------------------------------
   import gi
   gi.require_version('Gtk', '3.0')
   from gi.repository import Gtk
@@ -121,40 +87,70 @@ def xembed(
 
   # straight from the GTK example code
   # ----------------------------------
-  class TrayApp:
+  class Tray_Button:
 
-    def __init__(self, cmd_path, icon_path):
-      '''create a GTK status icon for the system tray'''
+    def __init__(
+      self,
+      cmd_path,
+      icon_path
+    ):
       self.tray = Gtk.StatusIcon()
       self.tray.set_tooltip_text(cmd_path)
       self.tray.set_from_pixbuf(self.load_icon(icon_path))
       self.tray.connect('activate', self.on_left_click)
       self.cmd_path = cmd_path
 
-    def load_icon(self, icon_path):
-      '''Load an image to be displayed in the tray.'''
+    def load_icon(
+      self,
+      icon_path
+    ):
       try:
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(icon_path)
         return pixbuf
       except Exception as e:
-        print(f'error loading icon: {e}')
+        print(f'error loading icon: {icon_path} - {e}')
         return None
 
-    def on_left_click(self, icon):
-      '''Handle left-click events on the tray icon.'''
-      spawn(f'{my_path} spawn {self.cmd_path}', daemon = False)
+    def on_left_click(
+      self,
+      icon
+    ):
+      spawn(
+        f'{own_path} spawn {self.cmd_path}',
+        daemon = False
+      )
 
-    def run(self):
-      '''Start the GTK main loop.'''
-      Gtk.main()
+  # load config
+  # -----------
+  config = None
+  try:
+    with open('config.json', 'r') as f:
+      import json
+      config = json.load(f)
+  except Exception as e:
+    print(f'could not read file config.json: {e}')
+    sys.exit(1)
 
-  # run the pretend gtk app with a clickable indicator icon
-  # -------------------------------------------------------
-  app = TrayApp(cmd_path, icon_path)
-  app.run()
+  # for all buttons in config
+  # -------------------------
+  tray_buttons = []
+  for app in config:
+    cmd  = app['path']
+    icon = app['icon']
+    tray = Tray_Button(
+      cmd_path  = cmd,
+      icon_path = icon
+    )
+    tray_buttons.append(tray)
 
-# python is effing weird
-# ----------------------
+  # run the GTK main loop
+  # ---------------------
+  Gtk.main()
+
 if __name__=='__main__':
-  main()
+  if   1==len(sys.argv):      spawn(f'{own_path} self', daemon = True)
+  elif 'spawn'==sys.argv[1]:  spawn(sys.argv[2], daemon = True)
+  elif 'self'==sys.argv[1]:   launch()
+  else:                       raise('no comprendo')
+  sys.exit(0)
 
